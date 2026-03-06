@@ -18,8 +18,8 @@ import {
   MoreHorizontal,
   Pencil,
   Trash2,
-  SidebarClose,
-  SidebarOpen,
+  ChevronLeftCircle,
+  ChevronRightCircle,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Button } from "@/components/ui/button";
@@ -98,13 +98,21 @@ export function VaultSidebar() {
 
   return (
     <div
-      className={`${collapsed ? "w-64" : "w-64"} h-screen bg-card border-r border-border flex flex-col`}
+      className={cn(
+        "h-screen bg-card border-r border-border flex flex-col transition-all duration-300 ease-in-out",
+        collapsed ? "w-14" : "w-64",
+      )}
     >
       {/* Header */}
-      <div className="p-4 border-b border-border">
-        <div className="flex flex-row justify-between items-center gap-2 mb-4">
+      <div className="p-4 border-b border-border relative">
+        <div
+          className={cn(
+            "flex items-center gap-2 mb-4",
+            collapsed ? "justify-center" : "justify-between",
+          )}
+        >
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg vault-gradient flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg vault-gradient flex items-center justify-center shrink-0">
               <Shield className="w-4 h-4 text-primary-foreground" />
             </div>
             {!collapsed && (
@@ -113,29 +121,41 @@ export function VaultSidebar() {
               </span>
             )}
           </div>
-          {collapsed ? (
-            <SidebarClose
-              className="h-6 w-6"
+          {
+            <button
               onClick={() => setCollapsed((prev) => !prev)}
-            />
-          ) : (
-            <SidebarOpen
-              className={`h-6 w-6`}
-              onClick={() => setCollapsed((prev) => !prev)}
-            />
-          )}
+              className="text-muted-foreground hover:text-foreground transition-colors absolute -right-2.75 z-50 cursor-pointer"
+            >
+              {!collapsed ? (
+                <ChevronLeftCircle className="h-5 w-5" />
+              ) : (
+                <ChevronRightCircle className="h-5 w-5" />
+              )}
+            </button>
+          }
         </div>
-        <div className="relative">
-          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-          <Input
-            placeholder="Search vault..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-8 h-9 text-sm bg-muted border-0"
-          />
-        </div>
-      </div>
 
+        {collapsed ? (
+          <div className="flex justify-center">
+            <button
+              onClick={() => setCollapsed(false)}
+              className="text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <Search className="w-4 h-4" />
+            </button>
+          </div>
+        ) : (
+          <div className="relative">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Input
+              placeholder="Search vault..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-8 h-9 text-sm bg-muted border-0"
+            />
+          </div>
+        )}
+      </div>
       {/* Quick Filters */}
       <div className="p-2 space-y-0.5">
         <SidebarItem
@@ -162,40 +182,53 @@ export function VaultSidebar() {
           collapsed={collapsed}
         />
       </div>
-
       {/* Groups */}
       <div className="flex-1 overflow-auto">
-        <div className="px-3 py-2 flex items-center justify-between">
-          <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-            Groups
-          </span>
-          <Dialog open={showAddGroup} onOpenChange={setShowAddGroup}>
-            <DialogTrigger asChild>
-              <button className="text-muted-foreground hover:text-foreground transition-colors">
-                <Plus className="w-4 h-4" />
-              </button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-sm">
-              <DialogHeader>
-                <DialogTitle>New Group</DialogTitle>
-              </DialogHeader>
-              <div className="space-y-4 pt-2">
-                <Input
-                  placeholder="Group name"
-                  value={newGroupName}
-                  onChange={(e) => setNewGroupName(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && handleAddGroup()}
-                  autoFocus
-                />
-                <Button
-                  onClick={handleAddGroup}
-                  className="w-full vault-gradient text-primary-foreground"
-                >
-                  Create Group
-                </Button>
-              </div>
-            </DialogContent>
-          </Dialog>
+        <div
+          className={cn(
+            "px-3 py-2 flex items-center",
+            collapsed ? "justify-center" : "justify-between",
+          )}
+        >
+          {!collapsed && (
+            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+              Groups
+            </span>
+          )}
+          {!collapsed && (
+            <Dialog open={showAddGroup} onOpenChange={setShowAddGroup}>
+              <DialogTrigger asChild>
+                <button className="text-muted-foreground hover:text-foreground transition-colors">
+                  <Plus className="w-4 h-4" />
+                </button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-sm">
+                <DialogHeader>
+                  <DialogTitle>New Group</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4 pt-2">
+                  <Input
+                    placeholder="Group name"
+                    value={newGroupName}
+                    onChange={(e) => setNewGroupName(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && handleAddGroup()}
+                    autoFocus
+                  />
+                  <Button
+                    onClick={handleAddGroup}
+                    className="w-full vault-gradient text-primary-foreground"
+                  >
+                    Create Group
+                  </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
+          )}
+          {collapsed && (
+            <div className="w-full flex justify-center py-1">
+              <div className="w-4 h-px bg-border" />
+            </div>
+          )}
         </div>
         <div className="px-2 space-y-0.5">
           <AnimatePresence>
@@ -221,42 +254,46 @@ export function VaultSidebar() {
                     onClick={() => setSelectedGroupId(group.id)}
                     collapsed={collapsed}
                   />
-                  <div className="absolute right-1 top-1/2 -translate-y-1/2 opacity-0 group-hover/item:opacity-100 transition-opacity">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <button className="p-1 rounded hover:bg-muted text-muted-foreground hover:text-foreground transition-colors">
-                          <MoreHorizontal className="w-3.5 h-3.5" />
-                        </button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="w-32">
-                        <DropdownMenuItem
-                          onClick={() => {
-                            setEditingGroup({ id: group.id, name: group.name });
-                            setShowEditGroup(true);
-                          }}
-                        >
-                          <Pencil className="w-3.5 h-3.5 mr-2" />
-                          Rename
-                        </DropdownMenuItem>
-                        {!isDefault && (
+                  {!collapsed && (
+                    <div className="absolute right-1 top-1/2 -translate-y-1/2 opacity-0 group-hover/item:opacity-100 transition-opacity">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <button className="p-1 rounded hover:bg-muted text-muted-foreground hover:text-foreground transition-colors">
+                            <MoreHorizontal className="w-3.5 h-3.5" />
+                          </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-32">
                           <DropdownMenuItem
-                            className="text-destructive focus:text-destructive"
-                            onClick={() => deleteGroup(group.id)}
+                            onClick={() => {
+                              setEditingGroup({
+                                id: group.id,
+                                name: group.name,
+                              });
+                              setShowEditGroup(true);
+                            }}
                           >
-                            <Trash2 className="w-3.5 h-3.5 mr-2" />
-                            Delete
+                            <Pencil className="w-3.5 h-3.5 mr-2" />
+                            Rename
                           </DropdownMenuItem>
-                        )}
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </div>
+                          {!isDefault && (
+                            <DropdownMenuItem
+                              className="text-destructive focus:text-destructive"
+                              onClick={() => deleteGroup(group.id)}
+                            >
+                              <Trash2 className="w-3.5 h-3.5 mr-2" />
+                              Delete
+                            </DropdownMenuItem>
+                          )}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
+                  )}
                 </motion.div>
               );
             })}
           </AnimatePresence>
         </div>
       </div>
-
       {/* Edit Group Dialog */}
       <Dialog open={showEditGroup} onOpenChange={setShowEditGroup}>
         <DialogContent className="sm:max-w-sm">
@@ -283,33 +320,49 @@ export function VaultSidebar() {
           </div>
         </DialogContent>
       </Dialog>
-
       {/* Footer */}
       <div className="p-3 border-t border-border space-y-1">
-        <div className="flex items-center justify-between px-1 mb-1">
-          <span className="text-xs text-muted-foreground">Theme</span>
-          <ThemeToggle />
-        </div>
+        {!collapsed && (
+          <div className="flex items-center justify-between px-1 mb-1">
+            <span className="text-xs text-muted-foreground">Theme</span>
+            <ThemeToggle />
+          </div>
+        )}
+        {collapsed && (
+          <div className="flex justify-center mb-1">
+            <ThemeToggle />
+          </div>
+        )}
         {biometricAvailable && (
           <Button
             variant="ghost"
             onClick={biometricEnabled ? disableBiometric : enableBiometric}
             className={cn(
-              "w-full justify-start",
+              "w-full",
+              collapsed ? "justify-center px-0" : "justify-start",
               biometricEnabled ? "text-primary" : "text-muted-foreground",
             )}
+            title={biometricEnabled ? "Biometrics On" : "Enable Biometrics"}
           >
-            <Fingerprint className="w-4 h-4 mr-2" />
-            {biometricEnabled ? "Biometrics On" : "Enable Biometrics"}
+            <Fingerprint className="w-4 h-4 shrink-0" />
+            {!collapsed && (
+              <span className="ml-2">
+                {biometricEnabled ? "Biometrics On" : "Enable Biometrics"}
+              </span>
+            )}
           </Button>
         )}
         <Button
           variant="ghost"
           onClick={lock}
-          className="w-full justify-start text-muted-foreground hover:text-destructive"
+          className={cn(
+            "w-full text-muted-foreground hover:text-destructive",
+            collapsed ? "justify-center px-0" : "justify-start",
+          )}
+          title="Lock Vault"
         >
-          <LogOut className="w-4 h-4 mr-2" />
-          Lock Vault
+          <LogOut className="w-4 h-4 shrink-0" />
+          {!collapsed && <span className="ml-2">Lock Vault</span>}
         </Button>
       </div>
     </div>
@@ -334,8 +387,10 @@ function SidebarItem({
   return (
     <button
       onClick={onClick}
+      title={collapsed ? label : undefined}
       className={cn(
         "w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-all duration-150",
+        collapsed ? "justify-center px-0" : "",
         active
           ? "bg-primary/10 text-primary font-medium"
           : "text-muted-foreground hover:bg-muted hover:text-foreground",
