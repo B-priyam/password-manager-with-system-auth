@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { VaultProvider } from "@/context/VaultContext";
 import { ThemeProvider } from "next-themes";
+import { Toaster } from "sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,7 +31,10 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <ThemeProvider>
-          <VaultProvider>{children}</VaultProvider>
+          <VaultProvider>
+            <Toaster />
+            {children}
+          </VaultProvider>
         </ThemeProvider>
       </body>
     </html>
