@@ -1,6 +1,5 @@
 // Local encrypted vault store
 // In production, this would sync to a backend. For now, localStorage with encryption.
-
 import { encrypt, decrypt } from "./passwordCrypto";
 
 export interface PasswordEntry {
@@ -36,6 +35,7 @@ const HASH_KEY = "vault_master_hash";
 const SETUP_KEY = "vault_is_setup";
 
 export function isVaultSetup(): boolean {
+  if (typeof window === "undefined") return false;
   return localStorage.getItem(SETUP_KEY) === "true";
 }
 

@@ -36,6 +36,7 @@ export async function isPlatformAuthenticatorAvailable(): Promise<boolean> {
 }
 
 export function hasStoredCredential(): boolean {
+  if (typeof window === "undefined") return false;
   return !!localStorage.getItem(CREDENTIAL_STORAGE_KEY);
 }
 

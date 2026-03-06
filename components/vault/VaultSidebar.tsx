@@ -18,6 +18,8 @@ import {
   MoreHorizontal,
   Pencil,
   Trash2,
+  SidebarClose,
+  SidebarOpen,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Button } from "@/components/ui/button";
@@ -72,6 +74,7 @@ export function VaultSidebar() {
     name: string;
   } | null>(null);
   const [showEditGroup, setShowEditGroup] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
 
   const groups = vaultData?.groups || [];
   const entries = vaultData?.entries || [];
@@ -94,14 +97,33 @@ export function VaultSidebar() {
   };
 
   return (
-    <div className="w-64 h-screen bg-card border-r border-border flex flex-col">
+    <div
+      className={`${collapsed ? "w-64" : "w-64"} h-screen bg-card border-r border-border flex flex-col`}
+    >
       {/* Header */}
       <div className="p-4 border-b border-border">
-        <div className="flex items-center gap-2 mb-4">
-          <div className="w-8 h-8 rounded-lg vault-gradient flex items-center justify-center">
-            <Shield className="w-4 h-4 text-primary-foreground" />
+        <div className="flex flex-row justify-between items-center gap-2 mb-4">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg vault-gradient flex items-center justify-center">
+              <Shield className="w-4 h-4 text-primary-foreground" />
+            </div>
+            {!collapsed && (
+              <span className="font-bold text-lg tracking-tight">
+                VaultGuard
+              </span>
+            )}
           </div>
-          <span className="font-bold text-lg tracking-tight">VaultGuard</span>
+          {collapsed ? (
+            <SidebarClose
+              className="h-6 w-6"
+              onClick={() => setCollapsed((prev) => !prev)}
+            />
+          ) : (
+            <SidebarOpen
+              className={`h-6 w-6`}
+              onClick={() => setCollapsed((prev) => !prev)}
+            />
+          )}
         </div>
         <div className="relative">
           <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -122,6 +144,7 @@ export function VaultSidebar() {
           count={allCount}
           active={selectedGroupId === null}
           onClick={() => setSelectedGroupId(null)}
+          collapsed={collapsed}
         />
         <SidebarItem
           icon={<Star className="w-4 h-4" />}
@@ -129,12 +152,14 @@ export function VaultSidebar() {
           count={favCount}
           active={selectedGroupId === "__favorites"}
           onClick={() => setSelectedGroupId("__favorites")}
+          collapsed={collapsed}
         />
         <SidebarItem
           icon={<Clock className="w-4 h-4" />}
           label="Recently Added"
           active={selectedGroupId === "__recent"}
           onClick={() => setSelectedGroupId("__recent")}
+          collapsed={collapsed}
         />
       </div>
 
@@ -194,6 +219,7 @@ export function VaultSidebar() {
                     count={count}
                     active={selectedGroupId === group.id}
                     onClick={() => setSelectedGroupId(group.id)}
+                    collapsed={collapsed}
                   />
                   <div className="absolute right-1 top-1/2 -translate-y-1/2 opacity-0 group-hover/item:opacity-100 transition-opacity">
                     <DropdownMenu>
@@ -296,12 +322,14 @@ function SidebarItem({
   count,
   active,
   onClick,
+  collapsed,
 }: {
   icon: React.ReactNode;
   label: string;
   count?: number;
   active?: boolean;
   onClick: () => void;
+  collapsed?: boolean;
 }) {
   return (
     <button
@@ -314,18 +342,22 @@ function SidebarItem({
       )}
     >
       {icon}
-      <span className="flex-1 text-left truncate">{label}</span>
-      {count !== undefined && count > 0 && (
-        <span
-          className={cn(
-            "text-xs px-1.5 py-0.5 rounded-full",
-            active
-              ? "bg-primary/20 text-primary"
-              : "bg-muted text-muted-foreground",
+      {!collapsed && (
+        <>
+          <span className="flex-1 text-left truncate">{label}</span>
+          {count !== undefined && count > 0 && (
+            <span
+              className={cn(
+                "text-xs px-1.5 py-0.5 rounded-full",
+                active
+                  ? "bg-primary/20 text-primary"
+                  : "bg-muted text-muted-foreground",
+              )}
+            >
+              {count}
+            </span>
           )}
-        >
-          {count}
-        </span>
+        </>
       )}
     </button>
   );
