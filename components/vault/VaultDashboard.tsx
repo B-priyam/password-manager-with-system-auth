@@ -1,23 +1,34 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { Plus, Shield, Key, FolderOpen, AlertTriangle } from "lucide-react";
+import {
+  Plus,
+  Shield,
+  Key,
+  FolderOpen,
+  AlertTriangle,
+  Menu,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useVault } from "@/context/VaultContext";
 import { VaultSidebar } from "./VaultSidebar";
 import { PasswordCard } from "./PasswordCard";
 import { AddPasswordDialog } from "./AddPasswordDialog";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { useMemo } from "react";
 
 export function VaultDashboard() {
   const { vaultData, selectedGroupId, searchQuery } = useVault();
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [editEntryId, setEditEntryId] = useState<string | null>(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const isMobile = useIsMobile();
 
   const entries = vaultData?.entries || [];
 
   const filteredEntries = useMemo(() => {
     let result = [...entries];
 
-    // Filter by group
     if (selectedGroupId === "__favorites") {
       result = result.filter((e) => e.favorite);
     } else if (selectedGroupId === "__recent") {
@@ -31,7 +42,6 @@ export function VaultDashboard() {
       result = result.filter((e) => e.groupId === selectedGroupId);
     }
 
-    // Search
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
       result = result.filter(
@@ -61,38 +71,61 @@ export function VaultDashboard() {
     return "All Passwords";
   };
 
+  const sidebarContent = (
+    <VaultSidebar onNavigate={() => setSidebarOpen(false)} />
+  );
+
   return (
     <div className="flex h-screen bg-background">
-      <VaultSidebar />
+      {/* Desktop sidebar */}
+      {!isMobile && sidebarContent}
 
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}
-        <header className="h-16 border-b border-border flex items-center justify-between px-6 bg-card/50 backdrop-blur-sm">
-          <div>
-            <h1 className="text-lg font-semibold">{getTitle()}</h1>
-            <p className="text-xs text-muted-foreground">
-              {filteredEntries.length} entries
-            </p>
+        <header className="h-14 md:h-16 border-b border-border flex items-center justify-between px-4 md:px-6 bg-card/50 backdrop-blur-sm">
+          <div className="flex items-center gap-3">
+            {isMobile && (
+              <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
+                <SheetTrigger asChild>
+                  <Button variant="ghost" size="icon" className="h-8 w-8 -ml-1">
+                    <Menu className="w-5 h-5" />
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="left" className="p-0 w-72">
+                  {sidebarContent}
+                </SheetContent>
+              </Sheet>
+            )}
+            <div>
+              <h1 className="text-base md:text-lg font-semibold">
+                {getTitle()}
+              </h1>
+              <p className="text-xs text-muted-foreground">
+                {filteredEntries.length} entries
+              </p>
+            </div>
           </div>
           <Button
             onClick={() => {
               setEditEntryId(null);
               setShowAddDialog(true);
             }}
-            className="vault-gradient text-primary-foreground gap-2"
+            className="vault-gradient text-primary-foreground gap-2 h-9 md:h-10 text-sm"
+            size={isMobile ? "sm" : "default"}
           >
             <Plus className="w-4 h-4" />
-            Add Password
+            <span className="hidden sm:inline">Add Password</span>
+            <span className="sm:hidden">Add</span>
           </Button>
         </header>
 
         {/* Content */}
-        <main className="flex-1 overflow-auto p-6">
+        <main className="flex-1 overflow-auto p-4 md:p-6">
           {filteredEntries.length === 0 ? (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="flex flex-col items-center justify-center h-full text-center"
+              className="flex flex-col items-center justify-center h-full text-center px-4"
             >
               <div className="w-16 h-16 rounded-2xl bg-muted flex items-center justify-center mb-4">
                 {searchQuery ? (
@@ -135,16 +168,17 @@ export function VaultDashboard() {
 
         {/* Stats Bar */}
         {entries.length > 0 && (
-          <div className="h-10 border-t border-border flex items-center gap-6 px-6 bg-card/50 text-xs text-muted-foreground">
-            <span className="flex items-center gap-1.5">
+          <div className="h-10 border-t border-border flex items-center gap-4 md:gap-6 px-4 md:px-6 bg-card/50 text-xs text-muted-foreground overflow-x-auto">
+            <span className="flex items-center gap-1.5 whitespace-nowrap">
               <Shield className="w-3.5 h-3.5" />
-              AES-256 Encrypted
+              <span className="hidden sm:inline">AES-256 Encrypted</span>
+              <span className="sm:hidden">Encrypted</span>
             </span>
-            <span className="flex items-center gap-1.5">
+            <span className="flex items-center gap-1.5 whitespace-nowrap">
               <Key className="w-3.5 h-3.5" />
-              {entries.length} passwords stored
+              {entries.length} passwords
             </span>
-            <span className="flex items-center gap-1.5">
+            <span className="flex items-center gap-1.5 whitespace-nowrap">
               <FolderOpen className="w-3.5 h-3.5" />
               {vaultData?.groups.length || 0} groups
             </span>
