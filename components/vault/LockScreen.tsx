@@ -118,11 +118,11 @@ export function LockScreen() {
               <Button
                 type="button"
                 variant="outline"
-                className="w-full h-14 gap-3 text-base font-medium border-primary/30 hover:border-primary hover:bg-primary/5 transition-all"
+                className="cursor-pointer w-full h-14 gap-3 text-base font-medium border-primary/30 hover:border-primary hover:bg-primary/5 transition-all hover:text-black dark:hover:text-white"
                 onClick={handleBiometricUnlock}
                 disabled={loading}
               >
-                <Fingerprint className="w-6 h-6 text-primary" />
+                <Fingerprint className="w-6 h-6 text-primary hover:text-white" />
                 Unlock with Biometrics
               </Button>
               <div className="flex items-center gap-3 my-4">

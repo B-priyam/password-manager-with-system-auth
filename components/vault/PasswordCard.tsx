@@ -212,7 +212,7 @@ export function PasswordCard({ entry, onEdit, index }: PasswordCardProps) {
           </p>
 
           <div className="flex items-center gap-2 mt-2">
-            <code className="text-xs font-mono bg-muted px-2 py-1 rounded flex-1 truncate">
+            <code className="text-xs font-mono bg-muted px-2 py-1 rounded flex-1 truncate select-none">
               {revealed ? plainPassword : "••••••••••••"}
             </code>
             {revealed && strength && (
@@ -335,7 +335,7 @@ export function PasswordCard({ entry, onEdit, index }: PasswordCardProps) {
 
         {/* Password row */}
         <div className="flex flex-col gap-1">
-          <code className="text-xs font-mono bg-muted px-2 py-2 rounded w-full break-all">
+          <code className="text-xs font-mono bg-muted px-2 py-2 rounded w-full break-all select-none">
             {revealed ? plainPassword : "••••••••••••"}
           </code>
           {revealed && strength && (
