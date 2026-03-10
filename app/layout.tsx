@@ -4,6 +4,7 @@ import "./globals.css";
 import { VaultProvider } from "@/context/VaultContext";
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "sonner";
+import { AuthProvider } from "@/context/AuthContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,10 +33,12 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <ThemeProvider attribute={"class"} defaultTheme="light">
-          <VaultProvider>
-            <Toaster />
-            {children}
-          </VaultProvider>
+          <AuthProvider>
+            <VaultProvider>
+              <Toaster />
+              {children}
+            </VaultProvider>
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>
