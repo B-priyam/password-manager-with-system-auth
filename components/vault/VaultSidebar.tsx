@@ -279,7 +279,9 @@ export function VaultSidebar({ onNavigate }: { onNavigate?: () => void }) {
             onClick={biometricEnabled ? disableBiometric : enableBiometric}
             className={cn(
               "w-full justify-start",
-              biometricEnabled ? "text-primary" : "text-muted-foreground",
+              biometricEnabled
+                ? "text-primary"
+                : "text-muted-foreground cursor-pointer",
             )}
           >
             <Fingerprint className="w-4 h-4 mr-2" />
@@ -289,7 +291,7 @@ export function VaultSidebar({ onNavigate }: { onNavigate?: () => void }) {
         <Button
           variant="ghost"
           onClick={lock}
-          className="w-full justify-start text-muted-foreground hover:text-destructive"
+          className=" w-full justify-start text-muted-foreground hover:text-destructive"
         >
           <LogOut className="w-4 h-4 mr-2" />
           Lock Vault
@@ -316,7 +318,7 @@ function SidebarItem({
     <button
       onClick={onClick}
       className={cn(
-        "w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-all duration-150",
+        "w-full flex items-center gap-2.5 px-3 py-2 rounded-lg cursor-pointer text-sm transition-all duration-150",
         active
           ? "bg-primary/10 text-primary font-medium"
           : "text-muted-foreground hover:bg-muted hover:text-foreground",
