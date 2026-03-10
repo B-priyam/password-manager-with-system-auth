@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import {
   Plus,
@@ -7,18 +7,26 @@ import {
   FolderOpen,
   AlertTriangle,
   Menu,
+  LogOut,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useVault } from "@/context/VaultContext";
+import { useAuth } from "@/context/AuthContext";
 import { VaultSidebar } from "./VaultSidebar";
 import { PasswordCard } from "./PasswordCard";
 import { AddPasswordDialog } from "./AddPasswordDialog";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { useMemo } from "react";
 
 export function VaultDashboard() {
   const { vaultData, selectedGroupId, searchQuery } = useVault();
+  const { user, logout } = useAuth();
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [editEntryId, setEditEntryId] = useState<string | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -91,7 +99,7 @@ export function VaultDashboard() {
                     <Menu className="w-5 h-5" />
                   </Button>
                 </SheetTrigger>
-                <SheetContent side="left" className="p-0 w-64">
+                <SheetContent side="left" className="p-0 w-72">
                   {sidebarContent}
                 </SheetContent>
               </Sheet>
@@ -105,18 +113,43 @@ export function VaultDashboard() {
               </p>
             </div>
           </div>
-          <Button
-            onClick={() => {
-              setEditEntryId(null);
-              setShowAddDialog(true);
-            }}
-            className="vault-gradient text-primary-foreground gap-2 h-9 md:h-10 text-sm"
-            size={isMobile ? "sm" : "default"}
-          >
-            <Plus className="w-4 h-4" />
-            <span className="hidden sm:inline">Add Password</span>
-            <span className="sm:hidden">Add</span>
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              onClick={() => {
+                setEditEntryId(null);
+                setShowAddDialog(true);
+              }}
+              className="vault-gradient text-primary-foreground gap-2 h-9 md:h-10 text-sm"
+              size={isMobile ? "sm" : "default"}
+            >
+              <Plus className="w-4 h-4" />
+              <span className="hidden sm:inline">Add Password</span>
+              <span className="sm:hidden">Add</span>
+            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-9 w-9 rounded-full bg-muted text-xs font-semibold"
+                >
+                  {user?.name?.charAt(0).toUpperCase() || "?"}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem className="text-xs text-muted-foreground focus:bg-transparent cursor-default">
+                  {user?.email}
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={logout}
+                  className="text-destructive focus:text-destructive"
+                >
+                  <LogOut className="w-4 h-4 mr-2" />
+                  Logout
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </header>
 
         {/* Content */}
